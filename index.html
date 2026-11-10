@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Brock Glenn — Photography and Film. Visual stories, portraits, and cinematic filmmaking.">
+<title>Brock Glenn | Photography & Film</title>
+<style>
+:root{--bg:#101010;--fg:#f5f2eb;--muted:#a6a29b;--accent:#c6a47a}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Arial,Helvetica,sans-serif}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit}
+header{position:fixed;top:0;left:0;width:100%;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:22px 6%;background:rgba(12,12,12,.9);backdrop-filter:blur(15px)}
+.logo{font-weight:800;letter-spacing:.2em;font-size:17px}
+nav{display:flex;gap:22px;flex-wrap:wrap}
+nav a{font-size:11px;text-transform:uppercase;letter-spacing:.12em}
+nav a:hover{color:var(--accent)}
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 8%;background:linear-gradient(90deg,rgba(0,0,0,.8),rgba(0,0,0,.15)),url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1800') center/cover}
+.eyebrow{text-transform:uppercase;letter-spacing:.35em;font-size:12px;color:var(--accent)}
+h1{font-size:clamp(65px,11vw,165px);line-height:.85;letter-spacing:-.07em;margin:25px 0}
+.hero p{max-width:520px;line-height:1.8;color:#ddd}
+.btn{display:inline-block;padding:16px 26px;border:1px solid var(--accent);color:var(--fg);background:transparent;cursor:pointer;text-transform:uppercase;letter-spacing:.15em;font-size:11px;margin:15px 10px 0 0}
+.btn:hover{background:var(--accent);color:#111}
+section{padding:110px 8%}
+.section-heading{font-size:clamp(42px,7vw,90px);letter-spacing:-.06em;margin:15px 0 35px}
+.intro{max-width:650px;line-height:1.9;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.photo{position:relative;overflow:hidden;cursor:pointer;background:#222}
+.photo img{width:100%;height:370px;object-fit:cover;display:block;transition:transform .6s}
+.photo:hover img{transform:scale(1.06)}
+.photo span{position:absolute;bottom:18px;left:20px;text-shadow:0 2px 8px #000;font-size:13px;letter-spacing:.15em;text-transform:uppercase}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+.filters button{background:none;border:1px solid #555;color:#ddd;padding:10px 18px;cursor:pointer}
+.filters button.active{border-color:var(--accent);color:var(--accent)}
+.dark{background:#191919}
+.films{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.film img{width:100%;height:320px;object-fit:cover}
+.film h3{font-size:23px}
+.film p{color:var(--muted)}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.about img{width:100%;height:520px;object-fit:cover}
+.about p{line-height:1.9;color:var(--muted)}
+form{max-width:720px;display:grid;gap:16px}
+input,select,textarea{width:100%;background:#222;color:white;border:1px solid #444;padding:16px;border-radius:0}
+textarea{min-height:120px}
+label{font-size:12px;letter-spacing:.08em;color:#ccc}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.notice{color:var(--muted);font-size:13px;line-height:1.7}
+footer{padding:45px 8%;border-top:1px solid #333;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:#999;font-size:12px}
+#lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:30;align-items:center;justify-content:center;padding:35px}
+#lightbox img{max-width:95%;max-height:85vh;object-fit:contain}
+.close{position:absolute;top:20px;right:30px;color:white;font-size:40px;background:none;border:0;cursor:pointer}
+@media(max-width:800px){
+header{position:relative;flex-direction:column;gap:20px}
+nav{justify-content:center;gap:14px}
+.hero{min-height:80vh}
+.grid,.films,.about{grid-template-columns:1fr}
+.photo img{height:420px}
+section{padding:75px 6%}
+.form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+<a class="logo" href="#home">BROCK GLENN</a>
+<nav aria-label="Main navigation">
+<a href="#photography">Photography</a>
+<a href="#films">Films</a>
+<a href="#about">About</a>
+<a href="#shop">Shop</a>
+<a href="#booking">Book</a>
+<a href="#contact">Contact</a>
+</nav>
+</header>
+
+<main>
+<section class="hero" id="home">
+<div>
+<div class="eyebrow">Photography / Filmmaking / Storytelling</div>
+<h1>BROCK<br>GLENN.</h1>
+<p>Capturing moments. Creating stories. Finding beauty in the extraordinary and the everyday.</p>
+<a class="btn" href="#photography">Explore My Work</a>
+<a class="btn" href="#booking">Book a Session</a>
+</div>
+</section>
+
+<section id="photography">
+<div class="eyebrow">Selected Frames</div>
+<h2 class="section-heading">PHOTOGRAPHY.</h2>
+<p class="intro">A collection of moments, places, and people. These sample images will be replaced with original Brock Glenn photography.</p>
+<div class="filters">
+<button class="active" onclick="filterPhotos('all',this)">All</button>
+<button onclick="filterPhotos('landscape',this)">Landscape</button>
+<button onclick="filterPhotos('portrait',this)">Portrait</button>
+<button onclick="filterPhotos('lifestyle',this)">Lifestyle</button>
+</div>
+<div class="grid">
+<div class="photo" data-category="landscape" onclick="viewPhoto(this)">
+<img loading="lazy" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900" alt="Mountain landscape"><span>Wilderness</span>
+</div>
+<div class="photo" data-category="portrait" onclick="viewPhoto(this)">
+<img loading="lazy" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="Portrait photograph"><span>Portraits</span>
+</div>
+<div class="photo" data-category="lifestyle" onclick="viewPhoto(this)">
+<img loading="lazy" src="https://images.unsplash.com/photo-1500534623283-312aade485b7?w=900" alt="Outdoor lifestyle"><span>Adventure</span>
+</div>
+<div class="photo" data-category="landscape" onclick="viewPhoto(this)">
+<img loading="lazy" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=900" alt="Golden landscape"><span>Golden Hour</span>
+</div>
+<div class="photo" data-category="lifestyle" onclick="viewPhoto(this)">
+<img loading="lazy" src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=900" alt="Forest scene"><span>In the Wild</span>
+</div>
+<div class="photo" data-category="landscape" onclick="viewPhoto(this)">
+<img loading="lazy" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900" alt="Woodland landscape"><span>Stillness</span>
+</div>
+</div>
+</section>
+
+<section class="dark" id="films">
+<div class="eyebrow">Motion Pictures</div>
+<h2 class="section-heading">FILMS.</h2>
+<p class="intro">Cinematic storytelling through movement, light, and sound. Film previews are placeholders until original videos are added.</p>
+<div class="films">
+<div class="film">
+<img loading="lazy" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=1000" alt="Film reel">
+<h3>Visual Stories</h3>
+<p>Original films coming soon.</p>
+</div>
+<div class="film">
+<img loading="lazy" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000" alt="Cinematic landscape">
+<h3>Behind the Lens</h3>
+<p>Creative projects and filmmaking.</p>
+</div>
+</div>
+</section>
+
+<section id="about">
+<div class="about">
+<div>
+<div class="eyebrow">The Person Behind the Camera</div>
+<h2 class="section-heading">ABOUT<br>BROCK.</h2>
+<p>I'm Brock Glenn. Welcome to my creative space.</p>
+<p>Photography and filmmaking offer a way to preserve meaningful moments and communicate stories that deserve to be told.</p>
+<p>This is where I'll share my work, creative projects, and the experiences behind the images.</p>
+<a href="#contact" class="btn">Let's Connect</a>
+</div>
+<img loading="lazy" src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1000" alt="Camera equipment placeholder">
+</div>
+</section>
+
+<section class="dark" id="shop">
+<div class="eyebrow">Prints and Creative Resources</div>
+<h2 class="section-heading">THE SHOP.</h2>
+<p class="intro">A future home for fine art prints, digital products, and creative resources.</p>
+<p class="notice">Shop checkout is not yet active.</p>
+</section>
+
+<section id="booking">
+<div class="eyebrow">Work Together</div>
+<h2 class="section-heading">BOOK A SESSION.</h2>
+<p class="intro">Choose your preferred appointment date and time. Every booking is personally reviewed before confirmation.</p>
+<form id="bookingForm">
+<div class="form-row">
+<div><label for="customerName">Your Name</label><input id="customerName" required placeholder="Full name"></div>
+<div><label for="customerPhone">Phone Number</label><input id="customerPhone" type="tel" required placeholder="Your mobile number"></div>
+</div>
+<label for="customerEmail">Email Address</label>
+<input id="customerEmail" type="email" required placeholder="you@example.com">
+<label for="session">Session Type</label>
+<select id="session" required>
+<option value="">Choose a session</option>
+<option>Portrait Photography</option>
+<option>Family Photography</option>
+<option>Commercial Photography</option>
+<option>Video Production</option>
+<option>Other / Consultation</option>
+</select>
+<div class="form-row">
+<div><label for="date">Preferred Date</label><input id="date" type="date" required></div>
+<div><label for="time">Preferred Time</label>
+<select id="time" required>
+<option value="">Choose a time</option>
+<option>9:00 AM</option><option>10:00 AM</option>
+<option>11:00 AM</option><option>1:00 PM</option>
+<option>2:00 PM</option><option>3:00 PM</option>
+<option>4:00 PM</option>
+</select></div>
+</div>
+<label for="details">Tell Me About Your Project</label>
+<textarea id="details" placeholder="What do you have in mind?"></textarea>
+<button class="btn" type="submit">Request Appointment</button>
+<p class="notice">Demo booking form: appointment requests are not sent yet. Dates and times shown do not represent live availability. SMS notifications and confirmation will be connected during setup.</p>
+</form>
+</section>
+
+<section class="dark" id="contact">
+<div class="eyebrow">Start a Conversation</div>
+<h2 class="section-heading">LET'S TALK.</h2>
+<p class="intro">Have a project, collaboration, or story in mind? I'd love to hear about it.</p>
+<p class="notice">Contact form and business email coming soon.</p>
+<a class="btn" href="#booking">Request a Session</a>
+</section>
+</main>
+
+<footer>
+<span>© <span id="year"></span> BROCK GLENN</span>
+<span>PHOTOGRAPHY & FILM</span>
+<span>brockglenn.com</span>
+</footer>
+
+<div id="lightbox" role="dialog" aria-label="Photo viewer" onclick="closePhoto()">
+<button class="close" aria-label="Close image" onclick="closePhoto()">×</button>
+<img id="lightboxImage" alt="Enlarged photograph">
+</div>
+
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+const dateInput=document.getElementById('date');
+const today=new Date();
+const localDate=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+dateInput.min=localDate;
+
+function filterPhotos(category,button){
+ document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+ button.classList.add('active');
+ document.querySelectorAll('.photo').forEach(photo=>{
+ photo.style.display=category==='all'||photo.dataset.category===category?'block':'none';
+ });
+}
+function viewPhoto(element){
+ const img=element.querySelector('img');
+ document.getElementById('lightboxImage').src=img.src;
+ document.getElementById('lightbox').style.display='flex';
+}
+function closePhoto(){
+ document.getElementById('lightbox').style.display='none';
+}
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape')closePhoto();
+});
+document.getElementById('bookingForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ alert('This is a preview. Appointment requests are not being sent yet. Online booking will be activated after the notification service is connected.');
+});
+</script>
+</body>
+</html>
