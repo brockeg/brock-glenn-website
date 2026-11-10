@@ -17,7 +17,7 @@ header{position:fixed;top:0;left:0;width:100%;z-index:10;display:flex;justify-co
 nav{display:flex;gap:22px;flex-wrap:wrap}
 nav a{font-size:11px;text-transform:uppercase;letter-spacing:.12em}
 nav a:hover{color:var(--accent)}
-.hero{min-height:100vh;display:flex;align-items:center;padding:120px 8%;background:linear-gradient(90deg,rgba(0,0,0,.8),rgba(0,0,0,.15)),url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1800') center/cover}
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 8%;background:linear-gradient(90deg,rgba(0,0,0,.8),rgba(0,0,0,.15)),url('/assets/photos/redwood-road.jpg') center/cover}
 .eyebrow{text-transform:uppercase;letter-spacing:.35em;font-size:12px;color:var(--accent)}
 h1{font-size:clamp(65px,11vw,165px);line-height:.85;letter-spacing:-.07em;margin:25px 0}
 .hero p{max-width:520px;line-height:1.8;color:#ddd}
@@ -124,32 +124,23 @@ body.modal-open{overflow:hidden}
 <section id="photography">
 <div class="eyebrow">Selected Frames</div>
 <h2 class="section-heading">PHOTOGRAPHY.</h2>
-<p class="intro">A collection of moments, places, and people. These sample images will be replaced with original Brock Glenn photography.</p>
+<p class="intro">A collection of quiet roads, towering forests, and the moments worth remembering. Original photographs from my travels.</p>
 <div class="filters">
 <button class="active" onclick="filterPhotos('all',this)">All</button>
 <button onclick="filterPhotos('landscape',this)">Landscape</button>
-<button onclick="filterPhotos('portrait',this)">Portrait</button>
-<button onclick="filterPhotos('lifestyle',this)">Lifestyle</button>
+<button onclick="filterPhotos('forest',this)">Forest</button>
+<button onclick="filterPhotos('adventure',this)">Adventure</button>
 </div>
 <div class="grid">
-<div class="photo" data-category="landscape" onclick="viewPhoto(this)">
-<img loading="lazy" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900" alt="Mountain landscape"><span>Wilderness</span>
-</div>
-<div class="photo" data-category="portrait" onclick="viewPhoto(this)">
-<img loading="lazy" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900" alt="Portrait photograph"><span>Portraits</span>
-</div>
-<div class="photo" data-category="lifestyle" onclick="viewPhoto(this)">
-<img loading="lazy" src="https://images.unsplash.com/photo-1500534623283-312aade485b7?w=900" alt="Outdoor lifestyle"><span>Adventure</span>
-</div>
-<div class="photo" data-category="landscape" onclick="viewPhoto(this)">
-<img loading="lazy" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=900" alt="Golden landscape"><span>Golden Hour</span>
-</div>
-<div class="photo" data-category="lifestyle" onclick="viewPhoto(this)">
-<img loading="lazy" src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=900" alt="Forest scene"><span>In the Wild</span>
-</div>
-<div class="photo" data-category="landscape" onclick="viewPhoto(this)">
-<img loading="lazy" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900" alt="Woodland landscape"><span>Stillness</span>
-</div>
+<div class="photo" data-category="landscape" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/redwood-road.jpg" alt="A winding road through towering redwood trees"><span>The Open Road</span></div>
+<div class="photo" data-category="forest" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/yosemite-giant-sequoia.jpg" alt="Sunlight streaming through giant sequoias in Yosemite"><span>Yosemite Light</span></div>
+<div class="photo" data-category="adventure" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/redwood-road-rv.jpg" alt="A camper van on a road through redwood forest"><span>Into the Redwoods</span></div>
+<div class="photo" data-category="forest" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/redwood-canopy-wide.jpg" alt="Redwood treetops reaching toward the sky"><span>Looking Up</span></div>
+<div class="photo" data-category="landscape" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/golden-forest-road.jpg" alt="Warm sunlight illuminating a forest road"><span>Golden Hour</span></div>
+<div class="photo" data-category="adventure" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/redwood-cyclist.jpg" alt="A cyclist traveling along a redwood forest road"><span>The Journey</span></div>
+<div class="photo" data-category="forest" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/redwood-canopy-blue.jpg" alt="Looking upward through redwood trees toward a blue sky"><span>Above the Trees</span></div>
+<div class="photo" data-category="forest" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/redwood-canopy-vertical.jpg" alt="A view straight up into towering redwoods"><span>Forest Canopy</span></div>
+<div class="photo" data-category="landscape" onclick="viewPhoto(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewPhoto(this)}"><img loading="lazy" src="/assets/photos/yosemite-sunlit-sequoia.jpg" alt="Sunlight falling across a giant sequoia trunk"><span>Among Giants</span></div>
 </div>
 </section>
 
@@ -181,7 +172,7 @@ body.modal-open{overflow:hidden}
 <p>This is where I'll share my work, creative projects, and the experiences behind the images.</p>
 <a href="#contact" class="btn">Let's Connect</a>
 </div>
-<img loading="lazy" src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1000" alt="Camera equipment placeholder">
+<img loading="lazy" src="/assets/photos/yosemite-sunlit-sequoia.jpg" alt="Sunlight shining through giant sequoia trees">
 </div>
 </section>
 
