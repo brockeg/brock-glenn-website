@@ -185,12 +185,12 @@ body.modal-open{overflow:hidden}
 <section id="booking">
 <div class="eyebrow">Work Together</div>
 <h2 class="section-heading">BOOK A SESSION.</h2>
-<p class="intro">Bookings can only be requested for tomorrow. Select the highlighted date, then choose a preferred time. All requests are personally reviewed before confirmation.</p>
+<p class="intro">Bookings can be requested starting tomorrow. Choose any future date, then select a preferred time. All requests are personally reviewed before confirmation.</p>
 <div class="booking-shell">
 <div class="calendar-top"><div><div class="eyebrow" style="margin-bottom:10px">Choose Your Date</div><h3 id="calendarMonth" aria-live="polite"></h3></div>
 <div class="calendar-controls"><button type="button" id="previousMonth" aria-label="Previous month">‹</button><button type="button" id="nextMonth" aria-label="Next month">›</button></div></div>
 <div id="calendarGrid" class="calendar-grid" role="group" aria-label="Select a preferred booking date"></div>
-<p class="notice">Only tomorrow is selectable. Monday–Saturday: 8:00 AM–7:00 PM. Sunday: 2:00 PM–7:00 PM. Times are requests, not confirmed availability.</p>
+<p class="notice">Bookings begin tomorrow. Monday–Saturday: 8:00 AM–7:00 PM. Sunday: 2:00 PM–7:00 PM. Times are requests, not confirmed availability.</p>
 </div>
 </section>
 <div class="booking-modal" id="bookingModal" aria-hidden="true">
@@ -262,11 +262,11 @@ function populateTimes(date){
 }
 function renderCalendar(){
  const tomorrow=tomorrowInCentral();
- // Keep the view fixed to the only bookable month.
- visibleYear=tomorrow.getUTCFullYear();visibleMonth=tomorrow.getUTCMonth();
- calendarMonth.textContent=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',year:'numeric'}).format(tomorrow);
- document.getElementById('previousMonth').disabled=true;
- document.getElementById('nextMonth').disabled=true;
+ // Show the selected month, while disallowing months before the first bookable date.
+ if(visibleYear<tomorrow.getUTCFullYear()||(visibleYear===tomorrow.getUTCFullYear()&&visibleMonth<tomorrow.getUTCMonth())){visibleYear=tomorrow.getUTCFullYear();visibleMonth=tomorrow.getUTCMonth()}
+ calendarMonth.textContent=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',year:'numeric'}).format(new Date(Date.UTC(visibleYear,visibleMonth,1,12)));
+ document.getElementById('previousMonth').disabled=visibleYear===tomorrow.getUTCFullYear()&&visibleMonth===tomorrow.getUTCMonth();
+ document.getElementById('nextMonth').disabled=false;
  calendarGrid.replaceChildren();
  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day=>{const el=document.createElement('div');el.className='calendar-weekday';el.textContent=day;calendarGrid.append(el)});
  const offset=new Date(Date.UTC(visibleYear,visibleMonth,1,12)).getUTCDay();
@@ -275,14 +275,14 @@ function renderCalendar(){
  for(let day=1;day<=last;day++){
   const date=new Date(Date.UTC(visibleYear,visibleMonth,day,12));
   const button=document.createElement('button');button.type='button';button.className='calendar-day';button.textContent=day;
-  button.disabled=dateKey(date)!==dateKey(tomorrow);
+  button.disabled=dateKey(date)<dateKey(tomorrow);
   button.setAttribute('aria-label',dateDescription(date)+(button.disabled?' unavailable':' available to request'));
-  if(!button.disabled)button.classList.add('selected');
+  if(dateInput.value===dateKey(date))button.classList.add('selected');
   button.addEventListener('click',()=>openBooking(date,button));calendarGrid.append(button);
  }
 }
 function openBooking(date,trigger){
- if(dateKey(date)!==dateKey(tomorrowInCentral())){renderCalendar();return}
+ if(dateKey(date)<dateKey(tomorrowInCentral())){renderCalendar();return}
  previousFocus=trigger;
  dateInput.value=dateKey(date);
  document.getElementById('selectedDateLabel').textContent='Preferred date: '+dateDescription(date);
@@ -291,8 +291,9 @@ function openBooking(date,trigger){
  document.getElementById('customerName').focus();
 }
 function closeBooking(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');if(previousFocus&&previousFocus.isConnected)previousFocus.focus();else document.getElementById('calendarMonth').focus()}
-document.getElementById('previousMonth').hidden=true;
-document.getElementById('nextMonth').hidden=true;
+document.getElementById('previousMonth').addEventListener('click',()=>changeMonth(-1));
+document.getElementById('nextMonth').addEventListener('click',()=>changeMonth(1));
+function changeMonth(delta){const candidate=new Date(Date.UTC(visibleYear,visibleMonth+delta,1,12));const min=tomorrowInCentral();if(dateKey(candidate)<dateKey(new Date(Date.UTC(min.getUTCFullYear(),min.getUTCMonth(),1,12))))return;visibleYear=candidate.getUTCFullYear();visibleMonth=candidate.getUTCMonth();renderCalendar()}
 syncCalendarMonth();
 renderCalendar();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!modal.classList.contains('open'))renderCalendar()});
@@ -326,7 +327,7 @@ document.addEventListener('keydown',e=>{
 });
 document.getElementById('bookingForm').addEventListener('submit',function(e){
  e.preventDefault();
- if(dateInput.value!==dateKey(tomorrowInCentral())){closeBooking();renderCalendar();alert('The available booking date has changed. Please select tomorrow again.');return}
+ if(dateInput.value<dateKey(tomorrowInCentral())){closeBooking();renderCalendar();alert('That date is no longer available. Please select tomorrow or a later date.');return}
  const chosenTime=document.getElementById('time').value;
  const tomorrow=tomorrowInCentral();
  const allowedStart=tomorrow.getUTCDay()===0?14:8;
