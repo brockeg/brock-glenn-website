@@ -61,6 +61,30 @@ nav{justify-content:center;gap:14px}
 section{padding:75px 6%}
 .form-row{grid-template-columns:1fr}
 }
+
+/* Calendar booking */
+.booking-shell{max-width:840px;margin-top:35px;border:1px solid #38332d;background:#161616;padding:clamp(20px,4vw,42px)}
+.calendar-top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}
+.calendar-top h3{font-size:clamp(24px,4vw,36px);margin:0;letter-spacing:-.04em}
+.calendar-controls{display:flex;gap:8px}
+.calendar-controls button{background:#242424;border:1px solid #555;color:#fff;min-width:43px;min-height:43px;cursor:pointer;font-size:22px}
+.calendar-controls button:hover,.calendar-day:not(:disabled):hover{border-color:var(--accent);color:var(--accent)}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.calendar-weekday{text-align:center;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:12px 0}
+.calendar-day{min-height:65px;background:#222;color:#f5f2eb;border:1px solid #383838;cursor:pointer;font-size:16px}
+.calendar-day:disabled{opacity:.25;cursor:not-allowed}
+.calendar-day.selected{border-color:var(--accent);background:#403429;color:#fff}
+.calendar-day:focus-visible,.calendar-controls button:focus-visible,.booking-modal button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.booking-modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:18px;overflow-y:auto}
+.booking-modal.open{display:flex}
+.booking-dialog{background:#171717;border:1px solid #6c5943;width:min(100%,690px);max-height:calc(100vh - 36px);overflow-y:auto;padding:clamp(22px,4vw,40px);position:relative}
+.booking-dialog h3{font-size:clamp(28px,5vw,44px);margin:12px 40px 15px 0;letter-spacing:-.05em}
+.booking-dialog .close-modal{position:absolute;right:16px;top:12px;background:none;border:0;color:white;font-size:32px;cursor:pointer}
+.booking-selected-date{color:var(--accent);margin:0 0 25px;font-size:16px}
+.booking-dialog form{max-width:none}
+body.modal-open{overflow:hidden}
+@media(max-width:600px){.calendar-grid{gap:4px}.calendar-day{min-height:47px;font-size:14px}.calendar-weekday{font-size:10px}.booking-shell{padding:15px}.booking-dialog .form-row{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -161,41 +185,34 @@ section{padding:75px 6%}
 <section id="booking">
 <div class="eyebrow">Work Together</div>
 <h2 class="section-heading">BOOK A SESSION.</h2>
-<p class="intro">Choose your preferred appointment date and time. Every booking is personally reviewed before confirmation.</p>
+<p class="intro">Select a preferred date on the calendar to request a photography or film session. All requests are personally reviewed before confirmation.</p>
+<div class="booking-shell">
+<div class="calendar-top"><div><div class="eyebrow" style="margin-bottom:10px">Choose Your Date</div><h3 id="calendarMonth" aria-live="polite"></h3></div>
+<div class="calendar-controls"><button type="button" id="previousMonth" aria-label="Previous month">‹</button><button type="button" id="nextMonth" aria-label="Next month">›</button></div></div>
+<div id="calendarGrid" class="calendar-grid" role="group" aria-label="Select a preferred booking date"></div>
+<p class="notice">All dates are request-only, not live availability. Selecting a date does not reserve an appointment.</p>
+</div>
+</section>
+<div class="booking-modal" id="bookingModal" aria-hidden="true">
+<div class="booking-dialog" role="dialog" aria-modal="true" aria-labelledby="bookingDialogTitle">
+<button type="button" class="close-modal" id="closeBooking" aria-label="Close booking form">×</button>
+<div class="eyebrow">Let's Create Something</div><h3 id="bookingDialogTitle">REQUEST A SESSION.</h3>
+<p id="selectedDateLabel" class="booking-selected-date"></p>
 <form id="bookingForm">
 <div class="form-row">
-<div><label for="customerName">Your Name</label><input id="customerName" required placeholder="Full name"></div>
-<div><label for="customerPhone">Phone Number</label><input id="customerPhone" type="tel" required placeholder="Your mobile number"></div>
+<div><label for="customerName">Your Name</label><input id="customerName" name="name" required autocomplete="name" placeholder="Full name"></div>
+<div><label for="customerPhone">Phone Number</label><input id="customerPhone" name="phone" type="tel" required autocomplete="tel" placeholder="Your mobile number"></div>
 </div>
-<label for="customerEmail">Email Address</label>
-<input id="customerEmail" type="email" required placeholder="you@example.com">
-<label for="session">Session Type</label>
-<select id="session" required>
-<option value="">Choose a session</option>
-<option>Portrait Photography</option>
-<option>Family Photography</option>
-<option>Commercial Photography</option>
-<option>Video Production</option>
-<option>Other / Consultation</option>
-</select>
-<div class="form-row">
-<div><label for="date">Preferred Date</label><input id="date" type="date" required></div>
-<div><label for="time">Preferred Time</label>
-<select id="time" required>
-<option value="">Choose a time</option>
-<option>9:00 AM</option><option>10:00 AM</option>
-<option>11:00 AM</option><option>1:00 PM</option>
-<option>2:00 PM</option><option>3:00 PM</option>
-<option>4:00 PM</option>
-</select></div>
-</div>
-<label for="details">Tell Me About Your Project</label>
-<textarea id="details" placeholder="What do you have in mind?"></textarea>
+<label for="customerEmail">Email Address</label><input id="customerEmail" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+<label for="session">Session Type</label><select id="session" name="session" required>
+<option value="">Choose a session</option><option>Portrait Photography</option><option>Family Photography</option><option>Commercial Photography</option><option>Video Production</option><option>Other / Consultation</option></select>
+<input id="date" name="date" type="hidden" required>
+<label for="time">Preferred Time</label><select id="time" name="time" required>
+<option value="">Choose a time</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option></select>
+<label for="details">Tell Me About Your Project</label><textarea id="details" name="details" placeholder="What do you have in mind?"></textarea>
 <button class="btn" type="submit">Request Appointment</button>
-<p class="notice">Demo booking form: appointment requests are not sent yet. Dates and times shown do not represent live availability. SMS notifications and confirmation will be connected during setup.</p>
-</form>
-</section>
-
+<p class="notice" role="status" id="bookingNotice">Preview mode: this form does not send requests yet. Dates and times are preferences, not confirmed availability.</p>
+</form></div></div>
 <section class="dark" id="contact">
 <div class="eyebrow">Start a Conversation</div>
 <h2 class="section-heading">LET'S TALK.</h2>
@@ -219,9 +236,50 @@ section{padding:75px 6%}
 <script>
 document.getElementById('year').textContent=new Date().getFullYear();
 const dateInput=document.getElementById('date');
-const today=new Date();
-const localDate=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
-dateInput.min=localDate;
+const calendarGrid=document.getElementById('calendarGrid');
+const calendarMonth=document.getElementById('calendarMonth');
+const modal=document.getElementById('bookingModal');
+const today=new Date();today.setHours(0,0,0,0);
+let visibleYear=today.getFullYear(),visibleMonth=today.getMonth(),previousFocus=null;
+const pad=n=>String(n).padStart(2,'0');
+function renderCalendar(){
+ calendarMonth.textContent=new Date(visibleYear,visibleMonth,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+ document.getElementById('previousMonth').disabled=visibleYear===today.getFullYear()&&visibleMonth===today.getMonth();
+ calendarGrid.replaceChildren();
+ ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day=>{const el=document.createElement('div');el.className='calendar-weekday';el.textContent=day;calendarGrid.append(el)});
+ const offset=new Date(visibleYear,visibleMonth,1).getDay();
+ for(let i=0;i<offset;i++){const blank=document.createElement('div');blank.setAttribute('aria-hidden','true');calendarGrid.append(blank)}
+ const last=new Date(visibleYear,visibleMonth+1,0).getDate();
+ for(let day=1;day<=last;day++){
+  const date=new Date(visibleYear,visibleMonth,day);
+  const button=document.createElement('button');button.type='button';button.className='calendar-day';button.textContent=day;
+  button.disabled=date<today;button.setAttribute('aria-label',date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}));
+  if(dateInput.value===visibleYear+'-'+pad(visibleMonth+1)+'-'+pad(day))button.classList.add('selected');
+  button.addEventListener('click',()=>openBooking(date,button));calendarGrid.append(button);
+ }
+}
+function changeMonth(delta){const next=new Date(visibleYear,visibleMonth+delta,1);if(next<new Date(today.getFullYear(),today.getMonth(),1))return;visibleYear=next.getFullYear();visibleMonth=next.getMonth();renderCalendar()}
+document.getElementById('previousMonth').addEventListener('click',()=>changeMonth(-1));
+document.getElementById('nextMonth').addEventListener('click',()=>changeMonth(1));
+function openBooking(date,trigger){
+ previousFocus=trigger;
+ dateInput.value=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate());
+ document.getElementById('selectedDateLabel').textContent='Preferred date: '+date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+ modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
+ renderCalendar();document.getElementById('customerName').focus();
+}
+function closeBooking(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');if(previousFocus&&previousFocus.isConnected)previousFocus.focus();else document.getElementById('calendarMonth').focus()}
+document.getElementById('closeBooking').addEventListener('click',closeBooking);
+modal.addEventListener('click',e=>{if(e.target===modal)closeBooking()});
+modal.addEventListener('keydown',e=>{
+ if(e.key!=='Tab')return;
+ const focusable=[...modal.querySelectorAll('button:not([disabled]),input:not([type="hidden"]),select,textarea')].filter(el=>el.getClientRects().length);
+ if(!focusable.length)return;
+ const first=focusable[0],last=focusable[focusable.length-1];
+ if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+ else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
+renderCalendar();
 
 function filterPhotos(category,button){
  document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
@@ -239,11 +297,11 @@ function closePhoto(){
  document.getElementById('lightbox').style.display='none';
 }
 document.addEventListener('keydown',e=>{
- if(e.key==='Escape')closePhoto();
+ if(e.key==='Escape'){if(modal.classList.contains('open'))closeBooking();else closePhoto();}
 });
 document.getElementById('bookingForm').addEventListener('submit',function(e){
  e.preventDefault();
- alert('This is a preview. Appointment requests are not being sent yet. Online booking will be activated after the notification service is connected.');
+ document.getElementById('bookingNotice').textContent='Preview only — your request was not sent. Online submissions will be enabled when the notification service is connected.'; alert('Preview only: your booking request has NOT been sent. Please do not consider this appointment reserved.');
 });
 </script>
 </body>
