@@ -185,12 +185,12 @@ body.modal-open{overflow:hidden}
 <section id="booking">
 <div class="eyebrow">Work Together</div>
 <h2 class="section-heading">BOOK A SESSION.</h2>
-<p class="intro">Select a preferred date on the calendar to request a photography or film session. All requests are personally reviewed before confirmation.</p>
+<p class="intro">Bookings can only be requested for tomorrow. Select the highlighted date, then choose a preferred time. All requests are personally reviewed before confirmation.</p>
 <div class="booking-shell">
 <div class="calendar-top"><div><div class="eyebrow" style="margin-bottom:10px">Choose Your Date</div><h3 id="calendarMonth" aria-live="polite"></h3></div>
 <div class="calendar-controls"><button type="button" id="previousMonth" aria-label="Previous month">‹</button><button type="button" id="nextMonth" aria-label="Next month">›</button></div></div>
 <div id="calendarGrid" class="calendar-grid" role="group" aria-label="Select a preferred booking date"></div>
-<p class="notice">All dates are request-only, not live availability. Selecting a date does not reserve an appointment.</p>
+<p class="notice">Only tomorrow is selectable. Monday–Saturday: 8:00 AM–7:00 PM. Sunday: 2:00 PM–7:00 PM. Times are requests, not confirmed availability.</p>
 </div>
 </section>
 <div class="booking-modal" id="bookingModal" aria-hidden="true">
@@ -208,7 +208,7 @@ body.modal-open{overflow:hidden}
 <option value="">Choose a session</option><option>Portrait Photography</option><option>Family Photography</option><option>Commercial Photography</option><option>Video Production</option><option>Other / Consultation</option></select>
 <input id="date" name="date" type="hidden" required>
 <label for="time">Preferred Time</label><select id="time" name="time" required>
-<option value="">Choose a time</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option></select>
+<option value="">Choose a time</option></select>
 <label for="details">Tell Me About Your Project</label><textarea id="details" name="details" placeholder="What do you have in mind?"></textarea>
 <button class="btn" type="submit">Request Appointment</button>
 <p class="notice" role="status" id="bookingNotice">Preview mode: this form does not send requests yet. Dates and times are preferences, not confirmed availability.</p>
@@ -239,36 +239,63 @@ const dateInput=document.getElementById('date');
 const calendarGrid=document.getElementById('calendarGrid');
 const calendarMonth=document.getElementById('calendarMonth');
 const modal=document.getElementById('bookingModal');
-const today=new Date();today.setHours(0,0,0,0);
-let visibleYear=today.getFullYear(),visibleMonth=today.getMonth(),previousFocus=null;
+// All booking dates use the business's Central Time zone, regardless of visitor location.
+const bookingZone='America/Chicago';
 const pad=n=>String(n).padStart(2,'0');
+function tomorrowInCentral(){
+ const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:bookingZone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(p=>p.type!=='literal').map(p=>[p.type,Number(p.value)]));
+ return new Date(Date.UTC(parts.year,parts.month-1,parts.day+1,12));
+}
+let visibleYear,visibleMonth,previousFocus=null;
+function syncCalendarMonth(){const d=tomorrowInCentral();visibleYear=d.getUTCFullYear();visibleMonth=d.getUTCMonth()}
+function dateKey(date){return date.getUTCFullYear()+'-'+pad(date.getUTCMonth()+1)+'-'+pad(date.getUTCDate())}
+function dateDescription(date){return new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(date)}
+function populateTimes(date){
+ const select=document.getElementById('time');select.replaceChildren();
+ const initial=document.createElement('option');initial.value='';initial.textContent='Choose a time';select.append(initial);
+ const start=date.getUTCDay()===0?14:8;
+ for(let hour=start;hour<=19;hour++){
+  const label=(hour%12||12)+':00 '+(hour<12?'AM':'PM');
+  const option=document.createElement('option');option.value=label;option.textContent=label;select.append(option);
+ }
+ select.value='';
+}
 function renderCalendar(){
- calendarMonth.textContent=new Date(visibleYear,visibleMonth,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
- document.getElementById('previousMonth').disabled=visibleYear===today.getFullYear()&&visibleMonth===today.getMonth();
+ const tomorrow=tomorrowInCentral();
+ // Keep the view fixed to the only bookable month.
+ visibleYear=tomorrow.getUTCFullYear();visibleMonth=tomorrow.getUTCMonth();
+ calendarMonth.textContent=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'long',year:'numeric'}).format(tomorrow);
+ document.getElementById('previousMonth').disabled=true;
+ document.getElementById('nextMonth').disabled=true;
  calendarGrid.replaceChildren();
  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day=>{const el=document.createElement('div');el.className='calendar-weekday';el.textContent=day;calendarGrid.append(el)});
- const offset=new Date(visibleYear,visibleMonth,1).getDay();
+ const offset=new Date(Date.UTC(visibleYear,visibleMonth,1,12)).getUTCDay();
  for(let i=0;i<offset;i++){const blank=document.createElement('div');blank.setAttribute('aria-hidden','true');calendarGrid.append(blank)}
- const last=new Date(visibleYear,visibleMonth+1,0).getDate();
+ const last=new Date(Date.UTC(visibleYear,visibleMonth+1,0,12)).getUTCDate();
  for(let day=1;day<=last;day++){
-  const date=new Date(visibleYear,visibleMonth,day);
+  const date=new Date(Date.UTC(visibleYear,visibleMonth,day,12));
   const button=document.createElement('button');button.type='button';button.className='calendar-day';button.textContent=day;
-  button.disabled=date<today;button.setAttribute('aria-label',date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}));
-  if(dateInput.value===visibleYear+'-'+pad(visibleMonth+1)+'-'+pad(day))button.classList.add('selected');
+  button.disabled=dateKey(date)!==dateKey(tomorrow);
+  button.setAttribute('aria-label',dateDescription(date)+(button.disabled?' unavailable':' available to request'));
+  if(!button.disabled)button.classList.add('selected');
   button.addEventListener('click',()=>openBooking(date,button));calendarGrid.append(button);
  }
 }
-function changeMonth(delta){const next=new Date(visibleYear,visibleMonth+delta,1);if(next<new Date(today.getFullYear(),today.getMonth(),1))return;visibleYear=next.getFullYear();visibleMonth=next.getMonth();renderCalendar()}
-document.getElementById('previousMonth').addEventListener('click',()=>changeMonth(-1));
-document.getElementById('nextMonth').addEventListener('click',()=>changeMonth(1));
 function openBooking(date,trigger){
+ if(dateKey(date)!==dateKey(tomorrowInCentral())){renderCalendar();return}
  previousFocus=trigger;
- dateInput.value=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate());
- document.getElementById('selectedDateLabel').textContent='Preferred date: '+date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+ dateInput.value=dateKey(date);
+ document.getElementById('selectedDateLabel').textContent='Preferred date: '+dateDescription(date);
+ populateTimes(date);
  modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
- renderCalendar();document.getElementById('customerName').focus();
+ document.getElementById('customerName').focus();
 }
 function closeBooking(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');if(previousFocus&&previousFocus.isConnected)previousFocus.focus();else document.getElementById('calendarMonth').focus()}
+document.getElementById('previousMonth').hidden=true;
+document.getElementById('nextMonth').hidden=true;
+syncCalendarMonth();
+renderCalendar();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!modal.classList.contains('open'))renderCalendar()});
 document.getElementById('closeBooking').addEventListener('click',closeBooking);
 modal.addEventListener('click',e=>{if(e.target===modal)closeBooking()});
 modal.addEventListener('keydown',e=>{
@@ -279,8 +306,6 @@ modal.addEventListener('keydown',e=>{
  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
 });
-renderCalendar();
-
 function filterPhotos(category,button){
  document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
  button.classList.add('active');
@@ -301,6 +326,12 @@ document.addEventListener('keydown',e=>{
 });
 document.getElementById('bookingForm').addEventListener('submit',function(e){
  e.preventDefault();
+ if(dateInput.value!==dateKey(tomorrowInCentral())){closeBooking();renderCalendar();alert('The available booking date has changed. Please select tomorrow again.');return}
+ const chosenTime=document.getElementById('time').value;
+ const tomorrow=tomorrowInCentral();
+ const allowedStart=tomorrow.getUTCDay()===0?14:8;
+ const allowedTimes=new Set(Array.from({length:20-allowedStart},(_,i)=>{const h=allowedStart+i;return (h%12||12)+':00 '+(h<12?'AM':'PM')}));
+ if(!allowedTimes.has(chosenTime)){alert('Please select a time within the available booking hours.');return}
  document.getElementById('bookingNotice').textContent='Preview only — your request was not sent. Online submissions will be enabled when the notification service is connected.'; alert('Preview only: your booking request has NOT been sent. Please do not consider this appointment reserved.');
 });
 </script>
